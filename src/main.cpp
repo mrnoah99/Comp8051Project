@@ -15,7 +15,7 @@ int main() {
     int actualFrameTime;
 
     game = new Game();
-    game->init("8051 Tutorial Engine", 800, 600, false);
+    game->init("8051 Project", 1280, 720, false);
 
     while (game->running()) {
         int currentTicks = SDL_GetTicks(); // time in ms since SDL was initialized
