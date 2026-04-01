@@ -1,5 +1,6 @@
 #include "../Game.h"
 #include "TextureManager.h"
+#include "../Component.h"
 
 #include <iostream>
 #include <ostream>
@@ -31,9 +32,12 @@ SDL_Texture* TextureManager::load(const char* path) {
     return texture;
 }
 
-void TextureManager::draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst) {
+void TextureManager::draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst, float rotation, Sprite sprite) {
+    SDL_FPoint centre;
+    centre.x = sprite.dst.w / 2;
+    centre.y = sprite.dst.h / 2;
     // draw texture to screen
-    SDL_RenderTexture(game->renderer, texture, &src, &dst);
+    SDL_RenderTextureRotated(game->renderer, texture, &src, &dst, rotation, &centre, SDL_FLIP_NONE);
 }
 
 void TextureManager::clean() {

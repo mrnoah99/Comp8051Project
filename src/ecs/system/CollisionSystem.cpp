@@ -3,6 +3,8 @@
 #include "../World.h"
 #include "../../utils/Collision.h"
 
+#include <cmath>
+
 void CollisionSystem::update(World &world) {
     const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
 
@@ -12,6 +14,16 @@ void CollisionSystem::update(World &world) {
         auto& c = entity->getComponent<Collider>();
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
+
+        c.rotation = t.rotation * (SDL_PI_D/180);
+        c.right = {
+            std::cos(c.rotation),
+            std::sin(c.rotation)
+        };
+        c.forward = {
+            -std::sin(c.rotation),
+            std::cos(c.rotation)
+        };
     }
 
     std::set<CollisionKey> currentCollisions;
@@ -32,6 +44,49 @@ void CollisionSystem::update(World &world) {
                     world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
                 }
                 world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
+            }
+
+            Vector2D collisionNormal;
+            float depth;
+            if (Collision::OBBvsOBB(colliderA, colliderB, collisionNormal, depth)) {
+                Vector2D localNormal = {
+                    collisionNormal.dot(colliderA.right),
+                    collisionNormal.dot(colliderA.forward)
+                };
+
+                Velocity v;
+                Collider c;
+                Collider other;
+                if (entityA->hasComponent<PlayerTag>() || entityA->hasComponent<Player2Tag>()) {
+                    v = entityA->getComponent<Velocity>();
+                    c = colliderA; other = colliderB;
+                } else if (entityB->hasComponent<PlayerTag>() || entityB->hasComponent<Player2Tag>()) {
+                    v = entityB->getComponent<Velocity>();
+                    c = colliderB; other = colliderA;
+                }
+
+                if (std::abs(localNormal.x) > std::abs(localNormal.y)) {
+                    currentCollisions.insert(makeKey(entityA, entityB));
+                    if (localNormal.x > 0) {
+                        // right side
+                        c.collisionRotationFactor = std::abs(localNormal.x * 180);
+                    } else {
+                        // left side
+                        c.collisionRotationFactor = -std::abs(localNormal.x * 180);
+                    }
+                } else {
+                    if (localNormal.y > 0) {
+                        // front
+                    } else {
+                        // back
+                    }
+                    c.collisionRotationFactor = localNormal.y * localNormal.x;
+                }
+
+                if (other.tag == "wall" || other.tag == "Wall") other.collisionRotationFactor = 0;
+
+                // slow down based on angle of collision (shallower collisions should slow less)
+                v.speed -= v.speed * std::abs(std::cos(c.rotation - other.rotation));
             }
         }
     }

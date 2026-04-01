@@ -17,6 +17,8 @@
 #include "../scene/SceneType.h"
 #include "system/MainMenuSystem.h"
 #include "system/UIRenderSystem.h"
+#include "system/RotationSystem.h"
+#include "system/CleanupSystem.h"
 
 class World {
     private:
@@ -34,6 +36,8 @@ class World {
         EventResponseSystem eventResponseSystem{*this};
         MainMenuSystem mainMenuSystem;
         UIRenderSystem uiRenderSystem;
+        RotationSystem rotationSystem;
+        CleanupSystem cleanupSystem;
     public:
         World() = default;
 
@@ -48,6 +52,8 @@ class World {
                 animationSystem.update(entities, deltaTime);
                 cameraSystem.update(entities);
                 destructionSystem.update(entities);
+                rotationSystem.update(*this, entities, deltaTime);
+                cleanupSystem.update(entities, *this);
             }
 
             synchroniseEntities();
@@ -102,6 +108,8 @@ class World {
         }
 
         EventManager& getEventManager() {return eventManager;}
+
+        CollisionSystem& getCollisionSystem() {return collisionSystem;}
 
         Map& getMap() {return map;}
 };

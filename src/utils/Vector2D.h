@@ -40,4 +40,6 @@ class Vector2D {
         friend Vector2D operator-(Vector2D vec);
 
         Vector2D& normalize();
+
+        float dot(Vector2D vec);
 };

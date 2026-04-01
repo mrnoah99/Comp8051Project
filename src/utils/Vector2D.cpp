@@ -78,3 +78,7 @@ Vector2D& Vector2D::normalize() {
 
     return *this;
 }
+
+float Vector2D::dot(Vector2D vec) {
+    return {x * vec.x + y * vec.y};
+}

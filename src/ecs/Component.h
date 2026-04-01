@@ -14,11 +14,14 @@ struct Transform {
     float rotation{};
     float scale{};
     Vector2D prevPosition{};
+    float rotationForceLeft{};
 };
 
 struct Velocity {
     Vector2D direction{};
     float speed{};
+    float maxSpeed{};
+    float acceleration{};
     Vector2D previousMoveDirection{};
 };
 
@@ -43,6 +46,12 @@ struct Sprite {
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    Vector2D centre{};
+    Vector2D halfSize{};
+    Vector2D right{};
+    Vector2D forward{};
+    float rotation{};
+    float collisionRotationFactor{};
     bool enabled = true;
 };
 
@@ -91,4 +100,5 @@ struct Children {
 };
 
 struct PlayerTag{};
+struct Player2Tag{};
 struct ProjectileTag{};
