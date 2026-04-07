@@ -1,1 +1,8 @@
 ./game.exe
+game.exe
+*.xcf
+*.tiled-project
+*.tiled-session
+assets/maps/Asphalt road
+assets/maps/Dirt
+assets/maps/Grass

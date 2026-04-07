@@ -10,6 +10,7 @@ class TextureManager {
         static SDL_Texture* load(const char* path);
 
         // floating point rect = FRect, needs x, y, width, and height
+        static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst);
         static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst, float rotation, Sprite sprite);
 
         static void clean();

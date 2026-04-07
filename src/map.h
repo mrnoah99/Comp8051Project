@@ -7,13 +7,17 @@ class Map {
         Map() = default;
         ~Map() = default;
 
-        void load(const char *path, SDL_Texture *ts);
+        void load(const char *path, SDL_Texture *track, SDL_Texture *grass);
         void draw(const Camera &cam);
 
-        SDL_Texture *tileset = nullptr;
+        SDL_Texture *trackTileset = nullptr;
+        SDL_Texture *grassTileset = nullptr;
         // initializing with {} makes all values inside set to 0 by default
         int width{}, height{};
-        std::vector<std::vector<int>> tileData;
+        std::vector<std::vector<int>> grassTileData;
+        std::vector<std::vector<int>> trackTileData;
         std::vector<Collider> colliders;
         std::vector<Collider> items;
+        std::vector<Collider> finishLine;
+        std::vector<Transform> startPositions;
 };

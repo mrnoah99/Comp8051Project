@@ -9,6 +9,8 @@ int main() {
     const int FPS = 60; // refresh rate of most monitors
     const int desiredFrameTime = 1000/FPS; //16ms per frame 
 
+    std::cout << "loading game" << std::endl;
+
     Uint64 ticks;
     float deltaTime = 0.0f;
 

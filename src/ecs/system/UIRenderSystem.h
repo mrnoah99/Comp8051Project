@@ -4,7 +4,7 @@
 #include "../Component.h"
 #include "../Entity.h"
 #include "../../utils/RenderUtils.h"
-#include "../manager/TextureManager.h"
+#include "../../manager/TextureManager.h"
 
 class UIRenderSystem {
     public:
@@ -21,7 +21,7 @@ class UIRenderSystem {
 
                     if (s.visible) {
                         SDL_FRect scaledDst = RenderUtils::getScaledDest(s.dst, t.scale);
-                        TextureManager::draw(s.texture, s.src, scaledDst);
+                        TextureManager::draw(s.texture, s.src, scaledDst, 0, s);
                     }
                 }
             }

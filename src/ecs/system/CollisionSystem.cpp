@@ -15,7 +15,7 @@ void CollisionSystem::update(World &world) {
         c.rect.x = t.position.x;
         c.rect.y = t.position.y;
 
-        c.rotation = t.rotation * (SDL_PI_D/180);
+        c.rotation = t.rotation * (SDL_PI_F/180.0f);
         c.right = {
             std::cos(c.rotation),
             std::sin(c.rotation)
@@ -70,15 +70,31 @@ void CollisionSystem::update(World &world) {
                     if (localNormal.x > 0) {
                         // right side
                         c.collisionRotationFactor = std::abs(localNormal.x * 180);
+                        if (entityA->hasComponent<RightWheels>()) {
+                            auto part = entityA->getComponent<RightWheels>();
+                            part.partHealth.updateHealth(-1);
+                        }
                     } else {
                         // left side
                         c.collisionRotationFactor = -std::abs(localNormal.x * 180);
+                        if (entityA->hasComponent<LeftWheels>()) {
+                            auto part = entityA->getComponent<LeftWheels>();
+                            part.partHealth.updateHealth(-1);
+                        }
                     }
                 } else {
                     if (localNormal.y > 0) {
                         // front
+                        if (entityA->hasComponent<Engine>()) {
+                            auto part = entityA->getComponent<Engine>();
+                            part.partHealth.updateHealth(-1);
+                        }
                     } else {
                         // back
+                        if (entityA->hasComponent<FuelTransmission>()) {
+                            auto part = entityA->getComponent<FuelTransmission>();
+                            part.partHealth.updateHealth(-1);
+                        }
                     }
                     c.collisionRotationFactor = localNormal.y * localNormal.x;
                 }

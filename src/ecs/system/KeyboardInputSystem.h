@@ -22,11 +22,11 @@ class KeyboardInputSystem {
                                 break;
                             case SDLK_A:
                                 v.direction.x = -1;
-                                t.rotation -= 1;
+                                t.rotation -= t.rotationSpeed;
                                 break;
                             case SDLK_D:
                                 v.direction.x = 1;
-                                t.rotation += 1;
+                                t.rotation += t.rotationSpeed;
                                 break;
                             default:
                                 break;

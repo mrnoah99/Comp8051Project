@@ -5,20 +5,19 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(SRC_FILES
     main.cpp
-    # TextureManager.cpp
-    # map.cpp
-    # Game.cpp
-    # gameObject.cpp
-    # Vector2D.cpp
-    # Collision.cpp
-    # CollisionSystem.cpp
-    # test.cpp
-    # tinyxml2.cpp
-    # AssetManager.cpp
-    # Scene.cpp
-    # EventResponseSystem.cpp
-    # MainMenuSystem.cpp
-    # MouseInputSystem.cpp
+    TextureManager.cpp
+    map.cpp
+    Game.cpp
+    Vector2D.cpp
+    Collision.cpp
+    CollisionSystem.cpp
+    tinyxml2.cpp
+    AssetManager.cpp
+    Scene.cpp
+    EventResponseSystem.cpp
+    MainMenuSystem.cpp
+    RotationSystem.cpp
+    CleanupSystem.cpp
     #add all new source files here
 )
 

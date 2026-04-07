@@ -1,6 +1,6 @@
 #include "../Game.h"
 #include "TextureManager.h"
-#include "../Component.h"
+#include "../ecs/Component.h"
 
 #include <iostream>
 #include <ostream>
@@ -30,6 +30,11 @@ SDL_Texture* TextureManager::load(const char* path) {
     textures[path] = texture;
 
     return texture;
+}
+
+void TextureManager::draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst) {
+    // draw texture to screen
+    SDL_RenderTexture(game->renderer, texture, &src, &dst);
 }
 
 void TextureManager::draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst, float rotation, Sprite sprite) {

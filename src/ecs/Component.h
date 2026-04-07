@@ -7,11 +7,13 @@
 
 #include "../utils/Vector2D.h"
 #include "system/AnimationClip.h"
+#include "Entity.h"
 
 
 struct Transform {
     Vector2D position{};
     float rotation{};
+    float rotationSpeed{};
     float scale{};
     Vector2D prevPosition{};
     float rotationForceLeft{};
@@ -82,6 +84,28 @@ struct SceneState {
 struct Health {
     int currentHealth{};
     int maxHealth{};
+};
+
+struct VehiclePartHealth {
+    int health{};
+    int maxHealth{};
+    std::function<void(int n)> updateHealth{};
+};
+
+struct Engine {
+    VehiclePartHealth partHealth{};
+};
+
+struct FuelTransmission {
+    VehiclePartHealth partHealth{};
+};
+
+struct LeftWheels {
+    VehiclePartHealth partHealth{};
+};
+
+struct RightWheels {
+    VehiclePartHealth partHealth{};
 };
 
 struct Clickable {
