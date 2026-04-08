@@ -11,10 +11,12 @@ class KeyboardInputSystem {
             const bool* keystates = SDL_GetKeyboardState(NULL);
 
             for (auto& e : entities) {
+                // controls for player 1
                 if (e->hasComponent<Velocity>() && e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
                     auto& v = e->getComponent<Velocity>();
                     auto& t = e->getComponent<Transform>();
 
+                    // find which keys are being pressed
                     if (keystates[SDL_SCANCODE_W]) v.speed += v.acceleration;
                     if (keystates[SDL_SCANCODE_S]) v.speed -= v.acceleration;
 
@@ -40,10 +42,12 @@ class KeyboardInputSystem {
                     if (t.rotation < 0) t.rotation = 360;
                 }
 
+                // controls for player 2
                 if (e->hasComponent<Velocity>() && e->hasComponent<Player2Tag>() && e->hasComponent<Transform>()) {
                     auto& v = e->getComponent<Velocity>();
                     auto& t = e->getComponent<Transform>();
 
+                    // find which keys are being pressed
                     if (keystates[SDL_SCANCODE_UP]) v.speed += v.acceleration;
                     if (keystates[SDL_SCANCODE_DOWN]) v.speed -= v.acceleration;
 

@@ -10,6 +10,7 @@ class RenderSystem {
         void render(std::vector<std::unique_ptr<Entity>>& entities) {
             Entity* cameraEnt = nullptr;
 
+            // find camera entity
             for (auto& e : entities) {
                 if (e->hasComponent<Camera>()) {
                     cameraEnt = e.get();
@@ -25,6 +26,7 @@ class RenderSystem {
                     auto& transform = entity->getComponent<Transform>();
                     auto& sprite = entity->getComponent<Sprite>();
                     
+                    // don't render UI elements here
                     if (sprite.layer != RenderLayer::WORLD) continue;
 
                     sprite.dst.x = transform.position.x - cam.view.x;
@@ -45,6 +47,7 @@ class RenderSystem {
                         }
                     }
 
+                    // renders sprite based on rotation around their centre
                     SDL_FPoint pivot;
                     pivot.x = sprite.dst.w / 2;
                     pivot.y = sprite.dst.h / 2;

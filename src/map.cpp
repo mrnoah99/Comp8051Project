@@ -93,6 +93,8 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
         objectGroup != nullptr;
         objectGroup = objectGroup->NextSiblingElement("objectgroup")) {
             std::string objectGroupName = std::string(objectGroup->Attribute("name"));
+
+            // item pickups
             if (objectGroupName == std::string("Item Layer")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
@@ -106,6 +108,8 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                 }
                 objectGroup = objectGroup->NextSiblingElement("objectgroup");
             }
+
+            // walls and map edges
             if (objectGroupName == std::string("Walls")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
@@ -120,6 +124,7 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                 }
             }
 
+            // finish line
             if (objectGroupName == std::string("FinishLine")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
@@ -135,6 +140,7 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                 Main::errors.emplace_back("Finish line colliders added...\n");
             }
 
+            // player spawn locations
             if (objectGroupName == std::string("StartPositions")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
@@ -148,6 +154,7 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                 }
             }
 
+            // camera location
             if (objectGroupName == std::string("Camera")) {
                 auto* obj = objectGroup->FirstChildElement("object");
                 if (obj) {
@@ -164,6 +171,7 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
 }
 
 void Map::draw(const Camera &cam) {
+    // if one of the tilesets is missing, cancel map draw
     if (!trackTileset || !grassTileset) {
         return;
     }
@@ -172,6 +180,7 @@ void Map::draw(const Camera &cam) {
 
     dst.w = dst.h = 128;
 
+    // grass tileset handling, rendered first so that it is below the track
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int type = grassTileData[row][col];
@@ -264,6 +273,7 @@ void Map::draw(const Camera &cam) {
         }
     }
 
+    // track data, rendered after grass
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             int type = trackTileData[row][col];

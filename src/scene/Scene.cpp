@@ -13,6 +13,7 @@ Scene::Scene(SceneType type, const std::string& sceneName, const std::string& ma
     initGameplay(mapPath.c_str(), windowWidth, windowHeight);
 }
 
+// creates main menu; unused in this version of the game
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
     auto &cam = world.createEntity();
         cam.addComponent<Camera>();
@@ -28,13 +29,19 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
         // createCogButton(windowWidth, windowHeight, settingsOverlay);
 }
 
+// creates the entities involved in the map gameplay
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+    // load tileset images
     SDL_Texture* track = TextureManager::load("./assets/maps/road_tileset.png");
     SDL_Texture* grass = TextureManager::load("./assets/maps/grass_tileset.png");
 
+    // determine if a second player is possible
     bool p2 = world.getMap().startPositions.size() > 1;
     world.player2 = p2;
+    std::string secondPlayer = p2 ? "Second player : True\n" : "Second player : False\n";
+    Main::errors.emplace_back(secondPlayer);
 
+    // load wall collider data
     world.getMap().load(mapPath, track, grass);
     for (auto &collider : world.getMap().colliders) {
         auto& e = world.createEntity();
@@ -53,6 +60,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     Main::errors.emplace_back("Colliders created...\n");
 
+    // load item pickup data
     for (auto &collider : world.getMap().items) {
         auto& item(world.createEntity());
         auto& c = item.addComponent<Collider>("item");
@@ -142,6 +150,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     Main::errors.emplace_back("Player 1 spawned...\n");
 
+    // spawn second player if possible
     if (p2) {
         // get player 2 spawn
         spawnLoc = world.getMap().startPositions.back().position;
@@ -191,11 +200,13 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
         Main::errors.emplace_back("Player 2 spawned...\n");
     }
 
+    // scene state tracker
     auto &state(world.createEntity());
     state.addComponent<SceneState>();
 
     world.setMovementBoundary();
 
+    // spawn finish line collider for tracking laps
     auto& finishPos = world.getMap().finishLine.front();
     auto& finishLine = world.createEntity();
     auto& finishTransform = finishLine.addComponent<Transform>(Vector2D(finishPos.rect.x, finishPos.rect.y), 0.0f, 0.0f, 1.0f);

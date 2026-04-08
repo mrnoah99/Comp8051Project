@@ -8,6 +8,7 @@
 
 class UIRenderSystem {
     public:
+        // unchanged from assignment
         void render(const std::vector<std::unique_ptr<Entity>>& entities) {
             for (auto& e : entities) {
                 if (e->hasComponent<Transform>() && e->hasComponent<Sprite>()) {

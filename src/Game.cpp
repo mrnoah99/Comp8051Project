@@ -11,6 +11,7 @@ Game::~Game() {
     destroy();
 }
 
+// creates the game
 void Game::init(const char* title, int width, int height, bool fullscreen) {
     int flags = 0;
     if (fullscreen) flags = SDL_WINDOW_FULLSCREEN;
@@ -40,6 +41,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
     Game::gameState = {3, 3, 3, 3, 12};
 }
 
+// handles input events for quit + menus
 void Game::handleEvents() {
     SDL_PollEvent(&event);
 
@@ -52,18 +54,21 @@ void Game::handleEvents() {
     }
 }
 
+// updates game state
 void Game::update(float deltaTime) {
     frameCount++;
 
     sceneManager->update(deltaTime, event);
 }
 
+// renders visual data to the screen
 void Game::render() {
     SDL_RenderClear(renderer);
     sceneManager->render();
     SDL_RenderPresent(renderer);
 }
 
+// clears used memory on close
 void Game::destroy() {
     TextureManager::clean();
     SDL_DestroyRenderer(renderer);

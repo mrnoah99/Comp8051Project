@@ -24,6 +24,7 @@
 
 class World {
     private:
+        // map and systems
         Map map;
         std::vector<std::unique_ptr<Entity>> entities;
         std::vector<std::unique_ptr<Entity>> deferredEntities;
@@ -45,25 +46,28 @@ class World {
 
         bool player2 = false;
 
+        // update game state
         void update(float deltaTime, SDL_Event event, SceneType sceneType) {
 
             if (sceneType == SceneType::MainMenu) {
                 mainMenuSystem.update(event);
             } else {
-                keyboardInputSystem.update(entities);
-                collisionSystem.update(*this);
-                rotationSystem.update(*this, entities, deltaTime);
-                movementSystem.update(entities, deltaTime);
-                animationSystem.update(entities, deltaTime);
-                cameraSystem.update(entities, player2);
-                destructionSystem.update(entities);
-                cleanupSystem.update(entities, *this);
+                keyboardInputSystem.update(entities); // keyboard input
+                collisionSystem.update(*this); // calculate collisions
+                rotationSystem.update(*this, entities, deltaTime); // update rotations
+                movementSystem.update(entities, deltaTime); // update movement
+                animationSystem.update(entities, deltaTime); // update animations (unused)
+                cameraSystem.update(entities, player2); // update camera position
+                destructionSystem.update(entities); // update entity health
+                cleanupSystem.update(entities, *this); // clean up dead or out-of-bounds entities
             }
 
+            // lifecycle functions
             synchroniseEntities();
             cleanup();
         }
 
+        // draw entities to the screen
         void render() {
             for (auto& e : entities) {
                 if (e->hasComponent<Camera>()) {
@@ -79,6 +83,7 @@ class World {
             movementSystem.updateWorldSize(map.width * 128.0f, map.height * 128.0f);
         }
 
+        // create new entity with no components
         Entity& createEntity() {
             //emplace back instead of push so we don't create a copy
             entities.emplace_back(std::make_unique<Entity>());
@@ -86,6 +91,7 @@ class World {
             return *entities.back();
         }
 
+        // create new entity with no components in time-safe way
         Entity& createDeferredEntity() {
             deferredEntities.emplace_back(std::make_unique<Entity>());
             return *deferredEntities.back();
@@ -95,6 +101,7 @@ class World {
             return entities;
         }
 
+        // delete all inactive entities
         void cleanup() {
             //use lambda predicate to remove all inactive entities;
             std::erase_if(
@@ -105,6 +112,7 @@ class World {
             );
         }
 
+        // add deferred entities into the main list
         void synchroniseEntities() {
             if (!deferredEntities.empty()) {
                 std::move(deferredEntities.begin(), deferredEntities.end(), std::back_inserter(entities));

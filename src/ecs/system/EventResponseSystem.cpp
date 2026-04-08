@@ -2,6 +2,7 @@
 #include "../World.h"
 #include "../../Game.h"
 
+// unchanged and not really used from assignments
 EventResponseSystem::EventResponseSystem(World &world) {
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
         if (e.type != EventType::Collision) return;

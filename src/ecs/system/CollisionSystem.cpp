@@ -9,7 +9,7 @@
 void CollisionSystem::update(World &world) {
     const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
 
-    //update all positions first
+    //update all positions and rotations first
     for (auto entity : collidables) {
         auto& t = entity->getComponent<Transform>();
         auto& c = entity->getComponent<Collider>();
@@ -41,6 +41,7 @@ void CollisionSystem::update(World &world) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
 
+            // box collider (not rotatable)
             if (Collision::AABB(colliderA, colliderB)) {
                 CollisionKey key = makeKey(entityA, entityB);
                 currentCollisions.insert(key);
@@ -50,6 +51,7 @@ void CollisionSystem::update(World &world) {
                 world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
             }
 
+            // box collider (rotating)
             Vector2D collisionNormal;
             float depth;
             if (Collision::OBBvsOBB(colliderA, colliderB, collisionNormal, depth)) {
@@ -57,6 +59,7 @@ void CollisionSystem::update(World &world) {
 
                 float speedThreshold = 20.0f;
 
+                // check for player entity
                 if (entityA->hasComponent<PlayerTag>() || entityA->hasComponent<Player2Tag>()) {
                     auto& v = entityA->getComponent<Velocity>();
                     auto& c = colliderA; auto& other = colliderB;
@@ -122,7 +125,8 @@ void CollisionSystem::update(World &world) {
 
                     if (other.tag == "wall" || other.tag == "Wall"
                         || other.tag == "finish" || other.tag == "Finish") other.collisionRotationFactor = 0;
-                } else if (entityB->hasComponent<PlayerTag>() || entityB->hasComponent<Player2Tag>()) {
+                } // check for player entity
+                else if (entityB->hasComponent<PlayerTag>() || entityB->hasComponent<Player2Tag>()) {
                     auto& v = entityB->getComponent<Velocity>();
                     auto& c = colliderB; auto& other = colliderA;
                     localNormal = {
@@ -215,6 +219,7 @@ void CollisionSystem::update(World &world) {
         }
     }
 
+    // emit collision events
     for (auto& key : activeCollisions) {
         if (!currentCollisions.contains(key)) {
             world.getEventManager().emit(CollisionEvent{key.first, key.second, CollisionState::Exit});
@@ -224,6 +229,7 @@ void CollisionSystem::update(World &world) {
     activeCollisions = std::move(currentCollisions);
 }
 
+// find all collidable entities
 std::vector<Entity*> CollisionSystem::queryCollidables(const std::vector<std::unique_ptr<Entity>>& entities) {
     std::vector<Entity*> collidables;
 

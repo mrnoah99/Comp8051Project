@@ -5,6 +5,7 @@ void RotationSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& 
     // Rotate entities based on input and collisions
     auto collisionSystem = world.getCollisionSystem();
 
+    // collision based rotation factor
     for (CollisionKey key : collisionSystem.activeCollisions) {
         auto& t1 = key.first->getComponent<Transform>();
         auto& t2 = key.second->getComponent<Transform>();
@@ -19,13 +20,17 @@ void RotationSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& 
         }
     }
 
+    // update the desired direction for smooth rotation over time
     for (auto& e : entities) {
+        // applies rotation based on rotation force still left to be applied
         if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
             auto& t = e->getComponent<Transform>();
 
             t.rotation += t.rotationForceLeft * deltaTime;
             t.rotationForceLeft -= t.rotationForceLeft * deltaTime;
         }
+
+        // applies change to desired direction vector and updates the actual direction by a fraction of that
         if (e->hasComponent<Transform>() && e->hasComponent<Velocity>()) {
             auto& t = e->getComponent<Transform>();
             auto& v = e->getComponent<Velocity>();

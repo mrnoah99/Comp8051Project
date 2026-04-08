@@ -9,7 +9,7 @@
 #include "system/AnimationClip.h"
 #include "Entity.h"
 
-
+// tracks position, rotation, and scale
 struct Transform {
     Vector2D position{};
     float rotation{};
@@ -19,6 +19,7 @@ struct Transform {
     float rotationForceLeft{};
 };
 
+// tracks speed and direction
 struct Velocity {
     Vector2D direction{};
     float speed{};
@@ -27,11 +28,13 @@ struct Velocity {
     Vector2D previousMoveDirection{};
 };
 
+// Classifies entities between world and menus/other UI
 enum class RenderLayer {
     WORLD,
     UI
 };
 
+// displays image
 struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
@@ -40,6 +43,7 @@ struct Sprite {
     bool visible = true;
 };
 
+// tracks collisions
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
@@ -52,6 +56,7 @@ struct Collider {
     bool enabled = true;
 };
 
+// animates entities with multiple sprites
 struct Animation {
     std::unordered_map<std::string, AnimationClip> clips{};
     std::string currentClip{};
@@ -60,49 +65,59 @@ struct Animation {
     float speed = 0.1f;
 };
 
+// displays the game view
 struct Camera {
     SDL_FRect view;
     float worldW;
     float worldH;
 };
 
+// spawns entities over time
 struct TimedSpawner {
     float spawnInterval{};
     std::function<void()> spawnCallback{};
     float timer{};
 };
 
+// tracks items collected
 struct SceneState {
     int coinsCollected{};
 };
 
+// tracks health values
 struct Health {
     int currentHealth{};
     int maxHealth{};
 };
 
+// tracks health for a vehicle part
 struct VehiclePartHealth {
     int health{};
     int maxHealth{};
     std::function<void(VehiclePartHealth& part, int n)> updateHealth{};
 };
 
+// front facing vehicle part
 struct Engine {
     VehiclePartHealth partHealth{};
 };
 
+// rear facing vehicle part
 struct FuelTransmission {
     VehiclePartHealth partHealth{};
 };
 
+// left facing vehicle part
 struct LeftWheels {
     VehiclePartHealth partHealth{};
 };
 
+// right facing vehicle part
 struct RightWheels {
     VehiclePartHealth partHealth{};
 };
 
+// menu button
 struct Clickable {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};
@@ -110,17 +125,22 @@ struct Clickable {
     bool pressed = false;
 };
 
+// parent-child relationship
 struct Parent {
     Entity* parent = nullptr;
 };
 
+// parent-child relationship
 struct Children {
     std::vector<Entity*> children;
 };
 
-struct PlayerTag{};
-struct Player2Tag{};
+// used to import camera location data from map if applicable
 struct CameraLocation {
     SDL_FRect camera;
 };
+
+// tags
+struct PlayerTag{};
+struct Player2Tag{};
 struct FinishLineTag{};

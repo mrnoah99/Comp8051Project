@@ -1,8 +1,10 @@
 #include "CleanupSystem.h"
 #include "../World.h"
 
+// deletes entities that have escaped the map boundaries or have lost all of their health
 void CleanupSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World& world) {
     for (auto& e : entities) {
+        // checks location vs map boundary
         if (e->hasComponent<Transform>()) {
             Transform t = e->getComponent<Transform>();
             if (t.position.x < 0 || t.position.y < 0) {
@@ -14,6 +16,8 @@ void CleanupSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World
                 e->destroy();
             }
         }
+
+        // checks if health is <= 0
         if (e->hasComponent<Health>()) {
             Health h = e->getComponent<Health>();
             if (h.currentHealth <= 0) e->destroy();

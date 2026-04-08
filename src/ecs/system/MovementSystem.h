@@ -22,11 +22,12 @@ class MovementSystem {
                     // get direction (updated by rotation system)
                     Vector2D directionVec = vel.direction;
                     directionVec.normalize();
-                    
                     Vector2D velocity = directionVec * vel.speed;
 
+                    // apply position change
                     transform.position += (velocity * deltaTime);
 
+                    // clamp position to world bounds
                     if (transform.position.x > worldW) transform.position.x = worldW;
                     if (transform.position.y > worldH) transform.position.y = worldH;
 
@@ -39,5 +40,4 @@ class MovementSystem {
         void updateWorldSize(int w, int h) {
             worldW = w; worldH = h;
         }
-    // Apply speed to forward direction
 };

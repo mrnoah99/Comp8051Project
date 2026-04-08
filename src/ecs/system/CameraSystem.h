@@ -10,6 +10,7 @@ class CameraSystem {
             Entity* playerEnt = nullptr;
             Entity* camLocation = nullptr;
 
+            // get player entity and camera location
             for (auto& e : entities) {
                 if (e->hasComponent<PlayerTag>()) {
                     playerEnt = e.get();
@@ -20,6 +21,7 @@ class CameraSystem {
                 if (playerEnt && camLocation) break;
             }
 
+            // if no player is found, or player 2 is present, lock camera to provided location
             if (!playerEnt || player2) {
                 if (camLocation) {
                     for (auto& e : entities) {
@@ -39,13 +41,16 @@ class CameraSystem {
 
             auto& playerTransform = playerEnt->getComponent<Transform>();
 
+            // follow the player
             for (auto& e : entities) {
                 if (e->hasComponent<Camera>()) {
                     auto& cam = e->getComponent<Camera>();
 
+                    // centre on player
                     cam.view.x = playerTransform.position.x - (cam.view.w / 2);
                     cam.view.y = playerTransform.position.y - (cam.view.h / 2);
 
+                    // clamp view to map boundary
                     if (cam.view.x < 0) {
                         cam.view.x = 0;
                     }

@@ -17,6 +17,7 @@ bool Collision::AABB(const Collider& colA, const Collider& colB) {
     return AABB(colA.rect, colB.rect);
 }
 
+// finds collisions between rotatable colliders
 bool Collision::OBBvsOBB(const Collider& A, const Collider& B, Vector2D& normal, float& depth) {
     Vector2D axes[4] = {
         A.right, A.forward,
