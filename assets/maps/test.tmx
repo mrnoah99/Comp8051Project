@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="10" height="6" tilewidth="128" tileheight="128" infinite="0" nextlayerid="7" nextobjectid="45">
+ <tileset firstgid="1" source="Grass.tsx"/>
+ <tileset firstgid="15" source="Road.tsx"/>
+ <layer id="1" name="Grass" width="10" height="6">
+  <data encoding="csv">
+4,4,1,9,9,9,9,2,4,4,
+4,4,5,11,11,11,11,3,4,4,
+4,4,5,11,11,11,11,3,4,4,
+4,4,5,11,11,11,11,3,4,4,
+4,4,5,11,11,11,11,3,4,4,
+4,4,6,13,13,13,13,7,4,4
+</data>
+ </layer>
+ <layer id="2" name="Track" width="10" height="6">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,17,16,16,18,0,0,0,
+0,0,0,25,0,0,15,0,0,0,
+0,0,0,15,0,0,15,0,0,0,
+0,0,0,19,16,16,20,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="3" name="Walls">
+  <object id="1" x="493.833" y="255.333" width="16.8333" height="256.667"/>
+  <object id="2" x="493.667" y="513.333" width="17" height="15"/>
+  <object id="3" x="493.417" y="239.5" width="17.0833" height="15"/>
+  <object id="4" x="767.75" y="240.25" width="16.25" height="256" rotation="90"/>
+  <object id="9" x="768" y="239.5" width="17.25" height="16.5"/>
+  <object id="10" x="768" y="256.5" width="17" height="254"/>
+  <object id="11" x="768.333" y="510.727" width="16.4091" height="17.6364"/>
+  <object id="12" x="878" y="256" width="18.5" height="255"/>
+  <object id="13" x="768.5" y="512" width="17" height="255.5" rotation="90"/>
+  <object id="14" x="767.5" y="622" width="17" height="255" rotation="90"/>
+  <object id="15" x="384.5" y="254.5" width="17" height="257.5"/>
+  <object id="16" x="768.5" y="129" width="17.5" height="255.5" rotation="90"/>
+  <object id="17" x="386.562" y="225.644" width="18.3908" height="29.8147" rotation="5"/>
+  <object id="18" x="394.845" y="192.182" width="18.5271" height="33.7703" rotation="15"/>
+  <object id="19" x="415.877" y="163.788" width="16.7358" height="31.2067" rotation="35"/>
+  <object id="20" x="445.272" y="141.783" width="17.2682" height="32.9038" rotation="55"/>
+  <object id="21" x="478.882" y="131.811" width="16.5329" height="31.4339" rotation="75"/>
+  <object id="23" x="511.671" y="128.235" width="17.514" height="31.5" rotation="85"/>
+  <object id="24" x="799.817" y="130.487" width="17.9593" height="31.2253" rotation="95"/>
+  <object id="25" x="833.389" y="141.681" width="18.3428" height="32.9265" rotation="110"/>
+  <object id="26" x="861.661" y="160.184" width="17.7847" height="30.9908" rotation="125"/>
+  <object id="27" x="881.5" y="189.25" width="16.5727" height="32.4956" rotation="145"/>
+  <object id="28" x="891.644" y="223.653" width="16.8725" height="31.8347" rotation="165"/>
+  <object id="29" x="896" y="256.5" width="16.8856" height="33.75" rotation="175"/>
+  <object id="30" x="893.091" y="542.955" width="17.2661" height="30.2301" rotation="185"/>
+  <object id="31" x="882.808" y="574.749" width="17.4986" height="30.2297" rotation="200"/>
+  <object id="32" x="864.034" y="605.149" width="17.4399" height="32.1839" rotation="215"/>
+  <object id="33" x="835.932" y="626.135" width="18.7234" height="31.8218" rotation="235"/>
+  <object id="34" x="800.5" y="634.958" width="17.1944" height="33.75" rotation="255"/>
+  <object id="35" x="768.788" y="640.812" width="18.6157" height="29.9185" rotation="265"/>
+  <object id="36" x="403.992" y="541.48" width="16.8568" height="29.9356" rotation="175"/>
+  <object id="37" x="413.929" y="571.297" width="17.0894" height="32.3654" rotation="160"/>
+  <object id="38" x="431.016" y="596.356" width="16.8413" height="33.3109" rotation="145"/>
+  <object id="39" x="454.05" y="612.112" width="17.5479" height="30.038" rotation="125"/>
+  <object id="40" x="483.252" y="621.304" width="17.4069" height="31.9262" rotation="110"/>
+  <object id="41" x="513.148" y="623.115" width="17.2102" height="31.1982" rotation="95"/>
+ </objectgroup>
+ <objectgroup id="4" name="FinishLine">
+  <object id="42" x="403.75" y="288" width="87.25" height="64.25"/>
+ </objectgroup>
+ <objectgroup id="5" name="StartPositions">
+  <object id="43" x="426" y="384" width="40" height="62"/>
+ </objectgroup>
+ <objectgroup id="6" name="Camera">
+  <object id="44" x="0" y="20" width="1280" height="720"/>
+ </objectgroup>
+</map>

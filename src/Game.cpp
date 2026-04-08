@@ -15,15 +15,29 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
     int flags = 0;
     if (fullscreen) flags = SDL_WINDOW_FULLSCREEN;
 
-    if (SDL_InitSubSystem(SDL_INIT_VIDEO) == 1) {
+    if (SDL_Init(SDL_INIT_VIDEO) == 1) {
         window = SDL_CreateWindow(title, width, height, flags);
 
+        if (!window) {isRunning = false; return;}
+
         renderer = SDL_CreateRenderer(window, nullptr);
+
+        if (!renderer) {isRunning = false; return;}
+
+        sceneManager = std::make_unique<SceneManager>();
+
+        if (!sceneManager) {isRunning = false; return;}
+
+        // sceneManager->loadScene(SceneType::Gameplay, "level1", "./assets/maps/level-1.tmx", 1280, 720);
+        sceneManager->loadScene(SceneType::Gameplay, "level2", "./assets/maps/level-2.tmx", 1280, 720);
+        sceneManager->changeSceneDeferred("level2");
 
         isRunning = true;
     } else {
         isRunning = false;
     }
+
+    Game::gameState = {3, 3, 3, 3, 12};
 }
 
 void Game::handleEvents() {

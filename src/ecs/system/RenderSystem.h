@@ -45,7 +45,10 @@ class RenderSystem {
                         }
                     }
 
-                    TextureManager::draw(sprite.texture, sprite.src, sprite.dst, transform.rotation, sprite);
+                    SDL_FPoint pivot;
+                    pivot.x = sprite.dst.w / 2;
+                    pivot.y = sprite.dst.h / 2;
+                    TextureManager::draw(sprite.texture, sprite.src, sprite.dst, transform.rotation, pivot);
                 }
             }
         }

@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "../main.h"
+
 #include "Entity.h"
 #include "system/MovementSystem.h"
 #include "system/RenderSystem.h"
@@ -41,18 +43,20 @@ class World {
     public:
         World() = default;
 
+        bool player2 = false;
+
         void update(float deltaTime, SDL_Event event, SceneType sceneType) {
 
             if (sceneType == SceneType::MainMenu) {
                 mainMenuSystem.update(event);
             } else {
-                keyboardInputSystem.update(entities, event);
-                movementSystem.update(entities, deltaTime);
+                keyboardInputSystem.update(entities);
                 collisionSystem.update(*this);
-                animationSystem.update(entities, deltaTime);
-                cameraSystem.update(entities);
-                destructionSystem.update(entities);
                 rotationSystem.update(*this, entities, deltaTime);
+                movementSystem.update(entities, deltaTime);
+                animationSystem.update(entities, deltaTime);
+                cameraSystem.update(entities, player2);
+                destructionSystem.update(entities);
                 cleanupSystem.update(entities, *this);
             }
 
@@ -72,12 +76,13 @@ class World {
         }
 
         void setMovementBoundary() {
-            movementSystem.updateWorldSize(map.width * 32.0f, map.height * 32.0f);
+            movementSystem.updateWorldSize(map.width * 128.0f, map.height * 128.0f);
         }
 
         Entity& createEntity() {
             //emplace back instead of push so we don't create a copy
             entities.emplace_back(std::make_unique<Entity>());
+            Main::errors.emplace_back("Entity created.\n");
             return *entities.back();
         }
 

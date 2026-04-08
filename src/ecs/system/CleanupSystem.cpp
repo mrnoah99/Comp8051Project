@@ -8,8 +8,8 @@ void CleanupSystem::update(std::vector<std::unique_ptr<Entity>>& entities, World
             if (t.position.x < 0 || t.position.y < 0) {
                 e->destroy();
             }
-            mapW = world.getMap().width * 32.0f;
-            mapH = world.getMap().height * 32.0f;
+            mapW = world.getMap().width * 128.0f;
+            mapH = world.getMap().height * 128.0f;
             if (t.position.x > mapW || t.position.y > mapH) {
                 e->destroy();
             }

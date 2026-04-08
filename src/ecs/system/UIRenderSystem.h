@@ -21,7 +21,7 @@ class UIRenderSystem {
 
                     if (s.visible) {
                         SDL_FRect scaledDst = RenderUtils::getScaledDest(s.dst, t.scale);
-                        TextureManager::draw(s.texture, s.src, scaledDst, 0, s);
+                        TextureManager::draw(s.texture, s.src, scaledDst);
                     }
                 }
             }

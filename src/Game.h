@@ -5,17 +5,28 @@
 #include "manager/SceneManager.h"
 
 struct GameState {
-    int engineHealth;
-    int rWheelHealth;
-    int lWheelHealth;
-    int transmissionHealth;
-    int playerHealth;
+    int engine1Health{};
+    int rWheel1Health{};
+    int lWheel1Health{};
+    int transmission1Health{};
+    int player1Health{};
+
+    int engine2Health{};
+    int rWheel2Health{};
+    int lWheel2Health{};
+    int transmission2Health{};
+    int player2Health{};
+
+    int p1Laps = 0;
+    int p2Laps = 0;
 };
 
 class Game {
     public:
         Game();
         ~Game();
+
+        static bool player2;
 
         // Same types as SDL uses
         void init(const char* title, int width, int height, bool fullscreen);
@@ -43,6 +54,7 @@ class Game {
     private:
         int frameCount = 0;
         bool isRunning = false;
+        bool sceneChangeComplete = false;
 
         SDL_Window* window = nullptr;
 

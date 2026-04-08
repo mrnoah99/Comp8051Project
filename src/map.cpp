@@ -1,6 +1,8 @@
 #include "map.h"
 #include "manager/TextureManager.h"
 #include "vendor/tinyxml2.h"
+#include "main.h"
+
 #include <sstream>
 #include <cmath>
 
@@ -12,41 +14,86 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
     if (doc.LoadFile(path) != tinyxml2::XML_SUCCESS) {
         return;
     }
+    Main::errors.emplace_back("Map loaded...\n");
 
     //parse width and height of map
     auto* mapNode = doc.FirstChildElement("map");
     width = mapNode->IntAttribute("width");
     height = mapNode->IntAttribute("height");
 
+    auto* tilesetData = mapNode->FirstChildElement("tileset");
+    if (tilesetData->IntAttribute("firstgid") == 1) tilesetData = tilesetData->NextSiblingElement("tileset");
+    if (tilesetData->IntAttribute("firstgid") == 15) {
+        grassGIDFirst = 0;
+        roadGIDFirst = 14;
+    } else if (tilesetData->IntAttribute("firstgid") == 91) {
+        grassGIDFirst = 90;
+        roadGIDFirst = 1000;
+    }
+
     //parse terrain data
     auto* layer = mapNode->FirstChildElement("layer");
-    auto* data = layer->FirstChildElement("data");
-
-    std::string csv = data->GetText();
-    std::stringstream ss(csv);
+    
     trackTileData = std::vector(height, std::vector<int>(width));
+    grassTileData = std::vector(height, std::vector<int>(width));
 
-    for (int terrainLayers = 0; terrainLayers < 2; terrainLayers++) {
+    Main::errors.emplace_back("Map data read and tile data processing initiated...\n");
+
+    if (layer) {
+        auto* data = layer->FirstChildElement("data");
+        std::string csv = data->GetText();
+        std::stringstream ss(csv);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 std::string val;
                 //read chars from stringstream into val until it hits a comma, or until eof
                 if (!std::getline(ss, val, ',')) break;
-                if (std::string(layer->Name()) == std::string("Track")) {
-                    trackTileData[i][j] = std::stoi(val);
-                } else if (std::string(layer->Name()) == std::string("Grass")) {
-                    grassTileData[i][j] = std::stoi(val);
+
+                int gid = std::stoi(val);
+                if (gid >= grassGIDFirst && gid < roadGIDFirst) gid = gid - grassGIDFirst;
+                else if (gid > roadGIDFirst) gid = gid - roadGIDFirst;
+
+                if (std::string(layer->Attribute("name")) == std::string("Track")) {
+                    trackTileData[i][j] = gid;
+                } else if (std::string(layer->Attribute("name")) == std::string("Grass")) {
+                    grassTileData[i][j] = gid;
                 }
             }
         }
-        layer = layer->NextSiblingElement("layer");
+    }
+    auto* layer2 = layer->NextSiblingElement("layer");
+
+    if (layer2) {
+        auto* data = layer2->FirstChildElement("data");
+        std::string csv = data->GetText();
+        std::stringstream ss(csv);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                std::string val;
+                //read chars from stringstream into val until it hits a comma, or until eof
+                if (!std::getline(ss, val, ',')) break;
+
+                int gid = std::stoi(val);
+                if (gid >= grassGIDFirst && gid < roadGIDFirst) gid = gid - grassGIDFirst;
+                else if (gid > roadGIDFirst) gid = gid - roadGIDFirst;
+
+                if (std::string(layer2->Attribute("name")) == std::string("Track")) {
+                    trackTileData[i][j] = gid;
+                } else if (std::string(layer2->Attribute("name")) == std::string("Grass")) {
+                    grassTileData[i][j] = gid;
+                }
+            }
+        }
     }
 
+    Main::errors.emplace_back("Terrain layers data read, reading colliders...\n");
+
     //parse collider data
-    for (auto* objectGroup = layer->NextSiblingElement("objectgroup");
+    for (auto* objectGroup = mapNode->FirstChildElement("objectgroup");
         objectGroup != nullptr;
         objectGroup = objectGroup->NextSiblingElement("objectgroup")) {
-            if (std::string(objectGroup->Name()) == std::string("Item Layer")) {
+            std::string objectGroupName = std::string(objectGroup->Attribute("name"));
+            if (objectGroupName == std::string("Item Layer")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
                 obj = obj->NextSiblingElement("object")) {
@@ -59,7 +106,7 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                 }
                 objectGroup = objectGroup->NextSiblingElement("objectgroup");
             }
-            if (std::string(objectGroup->Name()) == std::string("Walls")) {
+            if (objectGroupName == std::string("Walls")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
                 obj = obj->NextSiblingElement("object")) {
@@ -68,12 +115,12 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                     c.rect.y = obj->FloatAttribute("y");
                     c.rect.w = obj->FloatAttribute("width");
                     c.rect.h = obj->FloatAttribute("height");
-                    c.rotation = obj->FloatAttribute("rotation")*(180.0f/SDL_PI_F);
+                    c.rotation = obj->FloatAttribute("rotation")*(SDL_PI_F/180.0f);
                     colliders.push_back(c);
                 }
             }
 
-            if (std::string(objectGroup->Name()) == std::string("FinishLine")) {
+            if (objectGroupName == std::string("FinishLine")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
                 obj = obj->NextSiblingElement("object")) {
@@ -82,12 +129,13 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                     c.rect.y = obj->FloatAttribute("y");
                     c.rect.w = obj->FloatAttribute("width");
                     c.rect.h = obj->FloatAttribute("height");
-                    c.rotation = obj->FloatAttribute("rotation")*(180.0f/SDL_PI_F);
+                    c.rotation = obj->FloatAttribute("rotation")*(SDL_PI_F/180.0f);
                     finishLine.push_back(c);
                 }
+                Main::errors.emplace_back("Finish line colliders added...\n");
             }
 
-            if (std::string(objectGroup->Name()) == std::string("StartPositions")) {
+            if (objectGroupName == std::string("StartPositions")) {
                 for (auto* obj = objectGroup->FirstChildElement("object");
                 obj != nullptr;
                 obj = obj->NextSiblingElement("object")) {
@@ -95,10 +143,24 @@ void Map::load(const char *path, SDL_Texture *track, SDL_Texture *grass) {
                     t.position.x = obj->FloatAttribute("x");
                     t.position.y = obj->FloatAttribute("y");
                     t.rotation = obj->FloatAttribute("rotation");
-                    startPositions.push_back(t);
+                    startPositions.emplace_back(t);
+                    Main::errors.emplace_back("Start position added...\n");
+                }
+            }
+
+            if (objectGroupName == std::string("Camera")) {
+                auto* obj = objectGroup->FirstChildElement("object");
+                if (obj) {
+                    cameraLocation.x = obj->FloatAttribute("x");
+                    cameraLocation.y = obj->FloatAttribute("y");
+                    cameraLocation.w = obj->FloatAttribute("width");
+                    cameraLocation.h = obj->FloatAttribute("height");
+                    Main::errors.emplace_back("Camera location found...\n");
                 }
             }
         }
+
+        Main::errors.emplace_back("Object data loaded. Map initialising...\n");
 }
 
 void Map::draw(const Camera &cam) {
@@ -112,7 +174,101 @@ void Map::draw(const Camera &cam) {
 
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
+            int type = grassTileData[row][col];
+
+            if (type == 0) continue;
+
+            float worldX = static_cast<float>(col) * dst.w;
+            float worldY = static_cast<float>(row) * dst.h;
+
+            dst.x = std::round(worldX - cam.view.x);
+            dst.y = std::round(worldY - cam.view.y);
+
+            src.w = 128;
+            src.h = 128;
+            switch (type) {
+                case 1:
+                    // dirt bottom right
+                    src.x = 0;
+                    src.y = 0;
+                    break;
+                case 2:
+                    // dirt bottom left
+                    src.x = 128;
+                    src.y = 0;
+                    break;
+                case 3:
+                    // dirt left
+                    src.x = 256;
+                    src.y = 0;
+                    break;
+                case 4:
+                    // grass
+                    src.x = 384;
+                    src.y = 0;
+                    break;
+                case 5:
+                    // dirt right
+                    src.x = 512;
+                    src.y = 0;
+                    break;
+                case 6:
+                    // dirt top right
+                    src.x = 640;
+                    src.y = 0;
+                    break;
+                case 7:
+                    // dirt top left
+                    src.x = 768;
+                    src.y = 0;
+                    break;
+                case 8:
+                    // grass top right
+                    src.x = 0;
+                    src.y = 128;
+                    break;
+                case 9:
+                    // grass top
+                    src.x = 128;
+                    src.y = 128;
+                    break;
+                case 10:
+                    // grass top left
+                    src.x = 256;
+                    src.y = 128;
+                    break;
+                case 11:
+                    // dirt
+                    src.x = 384;
+                    src.y = 128;
+                    break;
+                case 12:
+                    // grass bottom right
+                    src.x = 512;
+                    src.y = 128;
+                    break;
+                case 13:
+                    // grass bottom
+                    src.x = 640;
+                    src.y = 128;
+                    break;
+                case 14:
+                    // grass bottom left
+                    src.x = 768;
+                    src.y = 128;
+                    break;
+                default:
+                    break;
+            }
+            TextureManager::draw(grassTileset, src, dst);
+        }
+    }
+
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
             int type = trackTileData[row][col];
+
+            if (type == 0) continue;
 
             float worldX = static_cast<float>(col) * dst.w;
             float worldY = static_cast<float>(row) * dst.h;
@@ -577,96 +733,6 @@ void Map::draw(const Camera &cam) {
                     break;
             }
             TextureManager::draw(trackTileset, src, dst);
-        }
-    }
-
-    for (int row = 0; row < height; row++) {
-        for (int col = 0; col < width; col++) {
-            int type = grassTileData[row][col];
-
-            float worldX = static_cast<float>(col) * dst.w;
-            float worldY = static_cast<float>(row) * dst.h;
-
-            dst.x = std::round(worldX - cam.view.x);
-            dst.y = std::round(worldY - cam.view.y);
-
-            src.w = 128;
-            src.h = 128;
-            switch (type) {
-                case 91:
-                    // dirt bottom right
-                    src.x = 0;
-                    src.y = 0;
-                    break;
-                case 92:
-                    // dirt bottom left
-                    src.x = 128;
-                    src.y = 0;
-                    break;
-                case 93:
-                    // dirt left
-                    src.x = 256;
-                    src.y = 0;
-                    break;
-                case 94:
-                    // grass
-                    src.x = 384;
-                    src.y = 0;
-                    break;
-                case 95:
-                    // dirt right
-                    src.x = 512;
-                    src.y = 0;
-                    break;
-                case 96:
-                    // dirt top right
-                    src.x = 640;
-                    src.y = 0;
-                    break;
-                case 97:
-                    // dirt top left
-                    src.x = 768;
-                    src.y = 0;
-                    break;
-                case 98:
-                    // grass top right
-                    src.x = 0;
-                    src.y = 128;
-                    break;
-                case 99:
-                    // grass top
-                    src.x = 128;
-                    src.y = 128;
-                    break;
-                case 100:
-                    // grass top left
-                    src.x = 256;
-                    src.y = 128;
-                    break;
-                case 101:
-                    // dirt
-                    src.x = 384;
-                    src.y = 128;
-                    break;
-                case 102:
-                    // grass bottom right
-                    src.x = 512;
-                    src.y = 128;
-                    break;
-                case 103:
-                    // grass bottom
-                    src.x = 640;
-                    src.y = 128;
-                    break;
-                case 104:
-                    // grass bottom left
-                    src.x = 768;
-                    src.y = 128;
-                    break;
-                default:
-                    break;
-            }
-            TextureManager::draw(grassTileset, src, dst);
         }
     }
 }

@@ -27,11 +27,6 @@ struct Velocity {
     Vector2D previousMoveDirection{};
 };
 
-struct Position {
-    float x = 0.0f;
-    float y = 0.0f;
-};
-
 enum class RenderLayer {
     WORLD,
     UI
@@ -89,7 +84,7 @@ struct Health {
 struct VehiclePartHealth {
     int health{};
     int maxHealth{};
-    std::function<void(int n)> updateHealth{};
+    std::function<void(VehiclePartHealth& part, int n)> updateHealth{};
 };
 
 struct Engine {
@@ -125,4 +120,7 @@ struct Children {
 
 struct PlayerTag{};
 struct Player2Tag{};
-struct ProjectileTag{};
+struct CameraLocation {
+    SDL_FRect camera;
+};
+struct FinishLineTag{};

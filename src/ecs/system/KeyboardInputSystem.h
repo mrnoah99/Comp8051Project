@@ -7,53 +7,66 @@
 
 class KeyboardInputSystem {
     public:
-        void update(const std::vector<std::unique_ptr<Entity>>& entities, SDL_Event& event) {
+        void update(const std::vector<std::unique_ptr<Entity>>& entities) {
+            const bool* keystates = SDL_GetKeyboardState(NULL);
+
             for (auto& e : entities) {
-                if (e->hasComponent<Velocity>() && e->hasComponent<PlayerTag>()) {
+                if (e->hasComponent<Velocity>() && e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
                     auto& v = e->getComponent<Velocity>();
                     auto& t = e->getComponent<Transform>();
-                    if (event.type == SDL_EVENT_KEY_DOWN) {
-                        switch (event.key.key) {
-                            case SDLK_W:
-                                v.speed += v.acceleration;
-                                break;
-                            case SDLK_S:
-                                v.speed -= v.acceleration;
-                                break;
-                            case SDLK_A:
-                                v.direction.x = -1;
-                                t.rotation -= t.rotationSpeed;
-                                break;
-                            case SDLK_D:
-                                v.direction.x = 1;
-                                t.rotation += t.rotationSpeed;
-                                break;
-                            default:
-                                break;
-                        }
+
+                    if (keystates[SDL_SCANCODE_W]) v.speed += v.acceleration;
+                    if (keystates[SDL_SCANCODE_S]) v.speed -= v.acceleration;
+
+                    if (keystates[SDL_SCANCODE_A]) t.rotation -= t.rotationSpeed;
+                    if (keystates[SDL_SCANCODE_D]) t.rotation += t.rotationSpeed;
+                    
+                    if (!keystates[SDL_SCANCODE_W] && !keystates[SDL_SCANCODE_S]) {    
+                        // apply drag when not accelerating
+                        if (v.speed > 0.1f)
+                            v.speed -= 0.01f;
+
+                        if (v.speed < -0.25f)
+                            v.speed += 0.025f;
+
+                        else
+                            v.speed = 0.0f;
                     }
+
+                    // clamp speed and rotation
                     if (v.speed >= v.maxSpeed) v.speed = v.maxSpeed;
-                    if (v.speed <= v.maxSpeed*-1) v.speed = v.maxSpeed*-1;
+                    if (v.speed <= v.maxSpeed*-0.5f) v.speed = v.maxSpeed*-0.5f;
                     if (t.rotation > 360) t.rotation = 0;
                     if (t.rotation < 0) t.rotation = 360;
-                    if (event.type == SDL_EVENT_KEY_UP) {
-                        switch (event.key.key) {
-                            case SDLK_W:
-                                v.direction.y = 0;
-                                break;
-                            case SDLK_S:
-                                v.direction.y = 0;
-                                break;
-                            case SDLK_A:
-                                v.direction.x = 0;
-                                break;
-                            case SDLK_D:
-                                v.direction.x = 0;
-                                break;
-                            default:
-                                break;
-                        }
+                }
+
+                if (e->hasComponent<Velocity>() && e->hasComponent<Player2Tag>() && e->hasComponent<Transform>()) {
+                    auto& v = e->getComponent<Velocity>();
+                    auto& t = e->getComponent<Transform>();
+
+                    if (keystates[SDL_SCANCODE_UP]) v.speed += v.acceleration;
+                    if (keystates[SDL_SCANCODE_DOWN]) v.speed -= v.acceleration;
+
+                    if (keystates[SDL_SCANCODE_LEFT]) t.rotation -= t.rotationSpeed;
+                    if (keystates[SDL_SCANCODE_RIGHT]) t.rotation += t.rotationSpeed;
+                    
+                    if (!keystates[SDL_SCANCODE_UP] && !keystates[SDL_SCANCODE_DOWN]) {    
+                        // apply drag when not accelerating
+                        if (v.speed > 0.1f)
+                            v.speed -= 0.01f;
+
+                        if (v.speed < -0.25f)
+                            v.speed += 0.025f;
+
+                        else
+                            v.speed = 0.0f;
                     }
+
+                    // clamp speed and rotation
+                    if (v.speed >= v.maxSpeed) v.speed = v.maxSpeed;
+                    if (v.speed <= v.maxSpeed*-0.5f) v.speed = v.maxSpeed*-0.5f;
+                    if (t.rotation > 360) t.rotation = 0;
+                    if (t.rotation < 0) t.rotation = 360;
                 }
             }
         }

@@ -20,4 +20,8 @@ class Map {
         std::vector<Collider> items;
         std::vector<Collider> finishLine;
         std::vector<Transform> startPositions;
+        SDL_FRect cameraLocation{0,0, 1280,720};
+    private:
+        int grassGIDFirst = 0;
+        int roadGIDFirst = 0;
 };

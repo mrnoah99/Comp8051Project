@@ -1,5 +1,6 @@
 #include <memory>
 #include <vector>
+#include <cmath>
 
 #include "../Entity.h"
 #include "../Component.h"
@@ -15,11 +16,11 @@ class MovementSystem {
                     auto& transform = entity->getComponent<Transform>();
                     auto& vel = entity->getComponent<Velocity>();
 
-                    //track previous frame position
+                    // track previous frame position
                     transform.prevPosition = transform.position;
-                    
+
+                    // get direction (updated by rotation system)
                     Vector2D directionVec = vel.direction;
-                    
                     directionVec.normalize();
                     
                     Vector2D velocity = directionVec * vel.speed;

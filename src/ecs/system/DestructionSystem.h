@@ -20,23 +20,23 @@ class DestructionSystem {
                         switch(e->getComponent<Engine>().partHealth.health) {
                             case 0:
                                 // engine destroyed, move speed basically nonexistent
-                                v.maxSpeed = 0.1f;
+                                v.maxSpeed = 35.0f;
                                 break;
                             case 1:
                                 // engine very low health, move speed drastically reduced
-                                v.maxSpeed = 10.0f;
+                                v.maxSpeed = 90.0f;
                                 break;
                             case 2:
                                 // engine damaged, move speed reduced
-                                v.maxSpeed = 45.0f;
+                                v.maxSpeed = 160.0f;
                                 break;
                             case 3:
                                 // engine in good health, max speed allowed
-                                v.maxSpeed = 100.0f;
+                                v.maxSpeed = 250.0f;
                                 break;
                             default:
-                                // if somehow out of this range, speed is 0
-                                v.maxSpeed = 0.0f;
+                                // if somehow out of this range, speed is level 0
+                                v.maxSpeed = 35.0f;
                                 break;
                         }
                     }
@@ -46,22 +46,23 @@ class DestructionSystem {
                         switch(e->getComponent<FuelTransmission>().partHealth.health) {
                             case 0:
                                 // fuel tank ruptured and transmission ruined, acceleration basically nonexistent
-                                v.acceleration = 0.05f;
+                                v.acceleration = 0.1f;
                                 break;
                             case 1:
                                 // fuel tank leaking and transmission very damaged, acceleration drastically lowered
-                                v.acceleration = 0.1f;
+                                v.acceleration = 0.35f;
+                                break;
                             case 2:
                                 // fuel tank holding and transmission damaged, acceleration reduced
-                                v.acceleration = 0.6f;
+                                v.acceleration = 0.8f;
                                 break;
                             case 3:
                                 // fuel tank and transmission health good, full acceleration rate
-                                v.acceleration = 1.0f;
+                                v.acceleration = 3.0f;
                                 break;
                             default:
-                                // if somehow breaking the range, acceleration is 0
-                                v.acceleration = 0.0f;
+                                // if somehow breaking the range, acceleration is level 0
+                                v.acceleration = 0.1f;
                                 break;
                         }
 
@@ -100,7 +101,7 @@ class DestructionSystem {
                                     break;
                                 default:
                                     // if somehow out of range, no turn for you >:)
-                                    t.rotationSpeed = 0.0f;
+                                    t.rotationSpeed = 0.05f;
                                     break;
                             }
                         }

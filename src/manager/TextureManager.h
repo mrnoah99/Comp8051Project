@@ -11,7 +11,7 @@ class TextureManager {
 
         // floating point rect = FRect, needs x, y, width, and height
         static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst);
-        static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst, float rotation, Sprite sprite);
+        static void draw(SDL_Texture* texture, SDL_FRect src, SDL_FRect dst, float rotation, SDL_FPoint centre);
 
         static void clean();
     private:

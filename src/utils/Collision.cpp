@@ -37,7 +37,7 @@ bool Collision::OBBvsOBB(const Collider& A, const Collider& B, Vector2D& normal,
         float distance = std::abs(d.dot(axis));
         float overlap = rA + rB - distance;
 
-        if (overlap <= 0)
+        if (overlap <= 4.0f)
             return false;
 
         if (overlap < minOverlap) {

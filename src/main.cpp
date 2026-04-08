@@ -1,17 +1,21 @@
-#include <iostream>
-#include "Game.h"
 #include <SDL3/SDL.h>
+#include <iostream>
+#include <memory>
+
+#include "main.h"
+#include "Game.h"
 
 //global variable
 Game *game = nullptr;
+std::vector<std::string> Main::errors = {};
 
 int main() {
+    std::cout << "Game starting\n";
+
     const int FPS = 60; // refresh rate of most monitors
-    const int desiredFrameTime = 1000/FPS; //16ms per frame 
+    const int desiredFrameTime = 1000/FPS; //16ms per frame
 
-    std::cout << "loading game" << std::endl;
-
-    Uint64 ticks;
+    Uint64 ticks = 0;
     float deltaTime = 0.0f;
 
     int actualFrameTime;
@@ -34,9 +38,21 @@ int main() {
         if (desiredFrameTime > actualFrameTime) {
             SDL_Delay(desiredFrameTime - actualFrameTime);
         }
+
+        // catch errors and keep them for later
+        const char* err = SDL_GetError();
+        if (err && *err){
+            Main::errors.emplace_back(std::string("Error: ") + err + "\n");
+            SDL_ClearError();
+        }
     }
 
     delete game;
+
+    // print out errors
+    for (auto e : Main::errors) {
+        std::cout << e;
+    }
 
     return 0;
 }
