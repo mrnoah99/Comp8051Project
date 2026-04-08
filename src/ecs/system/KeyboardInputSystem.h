@@ -23,13 +23,13 @@ class KeyboardInputSystem {
                     
                     if (!keystates[SDL_SCANCODE_W] && !keystates[SDL_SCANCODE_S]) {    
                         // apply drag when not accelerating
-                        if (v.speed > 0.1f)
-                            v.speed -= 0.01f;
+                        if (v.speed > 1.0f)
+                            v.speed -= 1.0f;
 
-                        if (v.speed < -0.25f)
-                            v.speed += 0.025f;
+                        if (v.speed < -1.0f)
+                            v.speed += 1.0f;
 
-                        else
+                        if (v.speed < 0.5f && v.speed > -0.5f)
                             v.speed = 0.0f;
                     }
 
@@ -52,13 +52,13 @@ class KeyboardInputSystem {
                     
                     if (!keystates[SDL_SCANCODE_UP] && !keystates[SDL_SCANCODE_DOWN]) {    
                         // apply drag when not accelerating
-                        if (v.speed > 0.1f)
-                            v.speed -= 0.01f;
+                        if (v.speed > 1.0f)
+                            v.speed -= 1.0f;
 
-                        if (v.speed < -0.25f)
-                            v.speed += 0.025f;
+                        if (v.speed < -1.0f)
+                            v.speed += 1.0f;
 
-                        else
+                        if (v.speed < 0.5f && v.speed > -0.5f)
                             v.speed = 0.0f;
                     }
 

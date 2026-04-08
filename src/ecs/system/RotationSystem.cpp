@@ -36,7 +36,7 @@ void RotationSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& 
             desiredDirection.normalize();
 
             // smoothly rotate over time
-            float rotateSpeed = 2.0f;
+            float rotateSpeed = 1.5f;
             v.direction = (v.direction * (1.0f - rotateSpeed * deltaTime)) + (desiredDirection * (rotateSpeed * deltaTime));
         }
     }

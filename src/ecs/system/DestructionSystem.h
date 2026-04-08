@@ -20,23 +20,23 @@ class DestructionSystem {
                         switch(e->getComponent<Engine>().partHealth.health) {
                             case 0:
                                 // engine destroyed, move speed basically nonexistent
-                                v.maxSpeed = 35.0f;
+                                v.maxSpeed = 40.0f;
                                 break;
                             case 1:
                                 // engine very low health, move speed drastically reduced
-                                v.maxSpeed = 90.0f;
+                                v.maxSpeed = 100.0f;
                                 break;
                             case 2:
                                 // engine damaged, move speed reduced
-                                v.maxSpeed = 160.0f;
+                                v.maxSpeed = 180.0f;
                                 break;
                             case 3:
                                 // engine in good health, max speed allowed
-                                v.maxSpeed = 250.0f;
+                                v.maxSpeed = 350.0f;
                                 break;
                             default:
                                 // if somehow out of this range, speed is level 0
-                                v.maxSpeed = 35.0f;
+                                v.maxSpeed = 40.0f;
                                 break;
                         }
                     }

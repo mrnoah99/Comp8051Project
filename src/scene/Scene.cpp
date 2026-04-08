@@ -32,8 +32,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     SDL_Texture* track = TextureManager::load("./assets/maps/road_tileset.png");
     SDL_Texture* grass = TextureManager::load("./assets/maps/grass_tileset.png");
 
-    // bool p2 = world.getMap().startPositions.size() > 1;
-    // world.player2 = p2;
+    bool p2 = world.getMap().startPositions.size() > 1;
+    world.player2 = p2;
 
     world.getMap().load(mapPath, track, grass);
     for (auto &collider : world.getMap().colliders) {
@@ -87,19 +87,22 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
     // add player
     // get spawn position if applicable
     Vector2D spawnLoc;
+    float spawnRotation;
     if (world.getMap().startPositions.empty()) {
         Main::errors.emplace_back("Start positions empty, placing player at default location...\n");
         spawnLoc = Vector2D(20.0f, 30.0f);
+        spawnRotation = 0.0f;
     }
     else {
         Main::errors.emplace_back("Spawn location found, positioning player...\n");
         spawnLoc = world.getMap().startPositions.front().position;
+        spawnRotation = world.getMap().startPositions.front().rotation;
     }
 
     // create player entity w/ position and velocity
     auto& player = world.createEntity();
-    auto& playerTransform = player.addComponent<Transform>(spawnLoc, 0.0f, 1.0f, 1.0f);
-    player.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 0.0f, 150.0f, 3.0f);
+    auto& playerTransform = player.addComponent<Transform>(spawnLoc, spawnRotation, 1.0f, 1.0f);
+    player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f, 150.0f, 3.0f);
 
     // add sprite
     SDL_Texture* texture = TextureManager::load("./assets/animations/Cars/car_red_small_2.png");
@@ -139,68 +142,72 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
     Main::errors.emplace_back("Player 1 spawned...\n");
 
-    // if (p2) {
-    //     // create player entity w/ position and velocity
-    //     auto& player2 = world.createEntity();
-    //     auto& player2Transform = player2.addComponent<Transform>(spawnLoc, 0.0f, 1.0f, 1.0f);
-    //     player2.addComponent<Velocity>(Vector2D(0.0f, -1.0f), 0.0f, 150.0f, 3.0f);
+    if (p2) {
+        // get player 2 spawn
+        spawnLoc = world.getMap().startPositions.back().position;
+        spawnRotation = world.getMap().startPositions.back().rotation;
 
-    //     // add sprite
-    //     SDL_Texture* texture2 = TextureManager::load("./assets/animations/Cars/car_blue_small_2.png");
-    //     SDL_FRect player2Src{0, 0, 40, 62};
-    //     SDL_FRect player2Dst {0, 0, 40, 62};
-    //     if (texture2) player2.addComponent<Sprite>(texture2, player2Src, player2Dst);
-    //     else Main::errors.emplace_back("player texture failed to load\n");
+        // create player entity w/ position and velocity
+        auto& player2 = world.createEntity();
+        auto& player2Transform = player2.addComponent<Transform>(spawnLoc, spawnRotation, 1.0f, 1.0f);
+        player2.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f, 150.0f, 3.0f);
+
+        // add sprite
+        SDL_Texture* texture2 = TextureManager::load("./assets/animations/Cars/car_blue_small_2.png");
+        SDL_FRect player2Src{0, 0, 40, 62};
+        SDL_FRect player2Dst {0, 0, 40, 62};
+        if (texture2) player2.addComponent<Sprite>(texture2, player2Src, player2Dst);
+        else Main::errors.emplace_back("player texture failed to load\n");
         
-    //     // player tag and health
-    //     player2.addComponent<Player2Tag>();
-    //     player2.addComponent<Health>(Game::gameState.player2Health, Game::gameState.player2Health);
+        // player tag and health
+        player2.addComponent<Player2Tag>();
+        player2.addComponent<Health>(Game::gameState.player2Health, Game::gameState.player2Health);
 
-    //     VehiclePartHealth vehicle2Component;
-    //     vehicle2Component.health = vehicle2Component.maxHealth = 3;
-    //     vehicle2Component.updateHealth = [](VehiclePartHealth& part, int n) {
-    //         part.health += n;
-    //         if (part.health > part.maxHealth)
-    //             part.health = part.maxHealth;
-    //         if (part.health < 0) part.health = 0;
-    //     };
+        VehiclePartHealth vehicle2Component;
+        vehicle2Component.health = vehicle2Component.maxHealth = 3;
+        vehicle2Component.updateHealth = [](VehiclePartHealth& part, int n) {
+            part.health += n;
+            if (part.health > part.maxHealth)
+                part.health = part.maxHealth;
+            if (part.health < 0) part.health = 0;
+        };
 
-    //     player2.addComponent<Engine>(vehicle2Component);
-    //     player2.addComponent<FuelTransmission>(vehicle2Component);
-    //     player2.addComponent<LeftWheels>(vehicle2Component);
-    //     player2.addComponent<RightWheels>(vehicle2Component);
+        player2.addComponent<Engine>(vehicle2Component);
+        player2.addComponent<FuelTransmission>(vehicle2Component);
+        player2.addComponent<LeftWheels>(vehicle2Component);
+        player2.addComponent<RightWheels>(vehicle2Component);
 
-    //     Main::errors.emplace_back("Player 2 components applied...\n");
+        Main::errors.emplace_back("Player 2 components applied...\n");
 
-    //     // collider
-    //     auto& player2Collider = player2.addComponent<Collider>();
-    //     player2Collider.tag = "player";
-    //     player2Collider.halfSize = Vector2D(player2Dst.w / 2, player2Dst.h / 2) * 0.8;
-    //     player2Collider.centre = player2Transform.position + Vector2D(player2Dst.w / 2, player2Dst.h / 2);
-    //     player2Collider.rotation = player2Transform.rotation * (SDL_PI_F/180.0f);
-    //     player2Collider.right = Vector2D(std::cos(player2Collider.rotation), std::sin(player2Collider.rotation));
-    //     player2Collider.forward = Vector2D(-std::sin(player2Collider.rotation), std::cos(player2Collider.rotation));
+        // collider
+        auto& player2Collider = player2.addComponent<Collider>();
+        player2Collider.tag = "player";
+        player2Collider.halfSize = Vector2D(player2Dst.w / 2, player2Dst.h / 2) * 0.8;
+        player2Collider.centre = player2Transform.position + Vector2D(player2Dst.w / 2, player2Dst.h / 2);
+        player2Collider.rotation = player2Transform.rotation * (SDL_PI_F/180.0f);
+        player2Collider.right = Vector2D(std::cos(player2Collider.rotation), std::sin(player2Collider.rotation));
+        player2Collider.forward = Vector2D(-std::sin(player2Collider.rotation), std::cos(player2Collider.rotation));
 
-    //     Main::errors.emplace_back("Player 2 spawned...\n");
-    // }
+        Main::errors.emplace_back("Player 2 spawned...\n");
+    }
 
     auto &state(world.createEntity());
     state.addComponent<SceneState>();
 
     world.setMovementBoundary();
 
-    // auto& finishPos = world.getMap().finishLine.front();
-    // auto& finishLine = world.createEntity();
-    // auto& finishTransform = finishLine.addComponent<Transform>(Vector2D(finishPos.rect.x, finishPos.rect.y), 0.0f, 0.0f, 1.0f);
-    // finishLine.addComponent<FinishLineTag>();
-    // auto& finishCollider = finishLine.addComponent<Collider>();
-    // finishCollider.centre = finishTransform.position + Vector2D(finishPos.rect.w / 2, finishPos.rect.h / 2);
-    // finishCollider.tag = "Finish";
-    // finishCollider.rotation = finishPos.rotation;
-    // finishCollider.right = Vector2D(std::cos(finishCollider.rotation), std::sin(finishCollider.rotation));
-    // finishCollider.forward = Vector2D(-std::sin(finishCollider.rotation), std::cos(finishCollider.rotation));
+    auto& finishPos = world.getMap().finishLine.front();
+    auto& finishLine = world.createEntity();
+    auto& finishTransform = finishLine.addComponent<Transform>(Vector2D(finishPos.rect.x, finishPos.rect.y), 0.0f, 0.0f, 1.0f);
+    finishLine.addComponent<FinishLineTag>();
+    auto& finishCollider = finishLine.addComponent<Collider>();
+    finishCollider.centre = finishTransform.position + Vector2D(finishPos.rect.w / 2, finishPos.rect.h / 2);
+    finishCollider.tag = "Finish";
+    finishCollider.rotation = finishPos.rotation;
+    finishCollider.right = Vector2D(std::cos(finishCollider.rotation), std::sin(finishCollider.rotation));
+    finishCollider.forward = Vector2D(-std::sin(finishCollider.rotation), std::cos(finishCollider.rotation));
 
-    // Main::errors.emplace_back("Finish line collider spawned...\n");
+    Main::errors.emplace_back("Finish line collider spawned...\n");
 }
 
 // Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
